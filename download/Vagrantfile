@@ -1,0 +1,24 @@
+# Vagrantfile
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+
+  config.vm.hostname = "ubuntu2204-rmf"
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "Ubuntu2204_RMF"
+    vb.memory = "6144"
+    vb.cpus = 4
+    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+  end
+
+  # 配置磁盘
+  config.vm.disk :disk, size: "70GB", primary: true
+  config.vm.disk :disk, size: "20GB", name: "extra_disk"
+  # 修改vagrant用户密码
+  config.vm.provision "shell", inline: "echo vagrant:123456wk | sudo chpasswd"
+  # 启用ssh密码认证
+  config.vm.provision "shell", path: "bootstrap.sh"
+end
